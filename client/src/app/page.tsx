@@ -1,38 +1,45 @@
-// This is a Server Component, so we can make it async and fetch data directly.
-async function getBackendMessage() {
+import ProductCard, { Product } from '@/components/ProductCard';
+
+// This Server Component fetches the data
+async function getProducts(): Promise<Product[]> {
   try {
-    // Fetch data from your backend API
-    const response = await fetch('http://localhost:5000', { cache: 'no-store' });
+    // We use the new API endpoint
+    const response = await fetch('http://localhost:5000/api/products', {
+      cache: 'no-store' // Use no-store to always get fresh data during development
+    });
 
     if (!response.ok) {
-      throw new Error('Failed to fetch data from server');
+      throw new Error('Failed to fetch products');
     }
     
-    const data = await response.json();
-    return data.message;
+    const products = await response.json();
+    return products;
   } catch (error) {
-    console.error(error);
-    // Return an error message if the fetch fails
-    return "Oops! Could not connect to the server. Is it running?";
+    console.error('Error fetching products:', error);
+    return []; // Return an empty array on error
   }
 }
 
 export default async function Home() {
-  // Call the function to get the message
-  const message = await getBackendMessage();
+  const products = await getProducts();
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-gray-900 text-white">
-      <div className="text-center">
-        <h1 className="text-5xl font-bold mb-4">Welcome to KickVault</h1>
-        <p className="text-xl text-gray-400 mb-8">
-          The modern E-Commerce experience for shoes lovers.
-        </p>
-        <div className="bg-gray-800 border border-gray-600 rounded-lg p-6 mt-8">
-          <p className="text-lg">Message from our server:</p>
-          <p className="text-2xl font-mono text-cyan-400 mt-2">{message}</p>
+    <main className="container mx-auto px-4 py-8">
+      <h1 className="text-4xl font-bold text-center mb-8">
+        Welcome to KickVault
+      </h1>
+
+      {products.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {products.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
         </div>
-      </div>
+      ) : (
+        <p className="text-center text-gray-500">
+          No products found. Please check if the server is running and the database is populated.
+        </p>
+      )}
     </main>
   );
 }

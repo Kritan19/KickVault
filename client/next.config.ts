@@ -1,7 +1,27 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'm.media-amazon.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.pexels.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cms-static.asics.com',
+      },
+      {
+        // This is the new one we are adding now
+        protocol: 'https',
+        hostname: 'encrypted-tbn0.gstatic.com', 
+      },
+    ],
+  },
 };
 
 export default nextConfig;
