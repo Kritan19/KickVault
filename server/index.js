@@ -1,22 +1,29 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const pool = require('./db');
 
-// Initialize the app
 const app = express();
 
-// Middleware
-app.use(cors()); // Allows requests from other origins (our React frontend)
-app.use(express.json()); // Allows us to parse JSON in the request body
+app.use(cors());
+app.use(express.json());
 
-// A simple test route
-app.get('/', (req, res) => {
-  res.json({ message: 'Hello from the KickVault server!' });
+// The real database test route
+app.get('/db', async (req, res) => {
+  try {
+    const dbTime = await pool.query('SELECT NOW()');
+    res.json({
+      message: 'Database connection successful!',
+      databaseTime: dbTime.rows[0].now
+    });
+  } catch (err) {
+    console.error('Error executing query', err.stack);
+    res.status(500).json({ error: 'Failed to execute query.' });
+  }
 });
 
-// Define the port
 const PORT = process.env.PORT || 5000;
 
-// Start the server
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`🚀 Server is running on port ${PORT}`);
 });
