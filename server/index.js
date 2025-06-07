@@ -1,14 +1,20 @@
 require('dotenv').config();
 const express = require('express');
-const cors = require('cors');
+const cors =require('cors');
 const pool = require('./db');
+
+// --- Route Imports ---
+const productsRouter = require('./routes/products'); // <-- ADD THIS
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-// The real database test route
+// --- API Routes ---
+app.use('/api/products', productsRouter); // <-- ADD THIS
+
+// Test route for the database
 app.get('/db', async (req, res) => {
   try {
     const dbTime = await pool.query('SELECT NOW()');
